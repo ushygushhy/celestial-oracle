@@ -1,26 +1,298 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Theme switch is driven by data-theme on <html>, not the OS preference,
+   because the almanac (light) theme is a deliberate aesthetic choice. */
+@custom-variant almanac (&:where([data-theme="almanac"], [data-theme="almanac"] *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-serif);
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--bg);
+    /* starfield (img2/4/5) over two faint nebula glows (img2 red, img3 warm gold) */
+    background-image:
+      var(--texture-stars),
+      radial-gradient(ellipse 60% 45% at 85% 8%, rgb(120 43 28 / 0.16), transparent 70%),
+      radial-gradient(ellipse 55% 50% at 8% 92%, rgb(204 168 116 / 0.08), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgb(39 62 83 / 0.35), transparent 80%);
+    background-attachment: fixed;
+  }
+
+  /* paper / print grain over everything (img1 cloth, img5 stipple) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--texture-grain);
+    opacity: var(--grain-opacity);
+    mix-blend-mode: overlay;
+    z-index: 100;
+  }
+
+  [data-theme="almanac"] body {
+    background-image:
+      radial-gradient(ellipse 90% 70% at 50% 30%, rgb(241 221 210 / 0.35), transparent 75%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgb(94 62 49 / 0.18), transparent 70%);
+  }
+  [data-theme="almanac"] body::before { mix-blend-mode: multiply; }
+
+  ::selection { background: rgb(204 168 116 / 0.35); color: var(--text); }
+
+  :focus-visible {
+    outline: 1px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: 0.04em; }
+
+  a { color: inherit; }
+
+  input, select, textarea, button { font: inherit; color: inherit; }
+
+  * { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Engraved roman capitals — tarot card captions (img3) */
+  .engraved {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-engraved);
+  }
+
+  /* Newspaper italic headline — "LOOK TO THE STARS" (img1) */
+  .headline-italic {
+    font-family: var(--font-headline);
+    font-style: italic;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+
+  /* Astrological glyphs, always text presentation */
+  .glyph {
+    font-family: var(--font-glyph);
+    font-variant-emoji: text;
+    font-style: normal;
+    line-height: 1;
+  }
+
+  /* Degrees, minutes, dates: lining tabular figures */
+  .num {
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+  }
+
+  /* Thick–thin newspaper rule (img1 masthead) */
+  .rule-double {
+    height: 6px;
+    border-top: 3px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .rule-hair { height: 1px; background: var(--rule); }
+
+  /* Double gilt frame with corner stars (img5 border) */
+  .frame-gilt {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    box-shadow:
+      inset 0 0 0 3px var(--bg-elevated),
+      inset 0 0 0 4px var(--rule),
+      var(--shadow-gilt);
+    backdrop-filter: blur(3px);
+  }
+  .frame-gilt > .frame-corner {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    color: var(--accent-bright);
+    pointer-events: none;
+  }
+
+  /* Plain panel: single hairline, used for dense data */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow-inset);
+    backdrop-filter: blur(3px);
+  }
+
+  /* Boxed section head — "CONSTELLATIONS" box (img1) */
+  .head-boxed {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1.5px solid var(--rule-strong);
+    padding: 0.2rem 1rem 0.25rem;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-engraved);
+  }
+
+  /* Almanac data tables */
+  .table-almanac {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .table-almanac th {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--rule-strong);
+    white-space: nowrap;
+  }
+  .table-almanac td {
+    padding: 0.32rem 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+  .table-almanac tr:hover td { background: rgb(204 168 116 / 0.05); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--radius-xs);
+    color: var(--accent-bright);
+    background: transparent;
+    transition: background 0.2s var(--ease-celestial), color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .btn:hover { background: rgb(204 168 116 / 0.12); box-shadow: var(--shadow-glow); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-gilt {
+    background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-600));
+    color: var(--accent-ink);
+    border-color: var(--color-gold-300);
+  }
+  .btn-gilt:hover { background: linear-gradient(180deg, var(--color-gold-300), var(--color-gold-500)); }
+  [data-theme="almanac"] .btn-gilt { background: var(--color-ink); color: var(--color-rose-100); }
+
+  /* Form fields — underline only, like filling in an almanac form */
+  .field {
+    width: 100%;
+    background: var(--surface-sunken);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-xs);
+    padding: 0.5rem 0.7rem;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field:focus { outline: none; border-color: var(--rule-strong); box-shadow: var(--shadow-glow); }
+  .field::placeholder { color: var(--text-faint); font-style: italic; }
+  .label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  /* Stippled shading (img5 engraving technique) */
+  .stipple { background-image: var(--texture-stipple); background-size: 4px 4px; }
+
+  /* Prose for AI interpretations */
+  .prose-oracle { line-height: 1.65; }
+  .prose-oracle p { margin: 0 0 0.85em; }
+  .prose-oracle h2, .prose-oracle h3 {
+    font-family: var(--font-display);
+    color: var(--accent-bright);
+    letter-spacing: 0.08em;
+    margin: 1.2em 0 0.4em;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+  }
+  .prose-oracle strong { color: var(--accent-bright); font-weight: 600; }
+  .prose-oracle ul { list-style: none; padding-left: 0; margin: 0 0 0.85em; }
+  .prose-oracle li { padding-left: 1.1em; position: relative; margin-bottom: 0.3em; }
+  .prose-oracle li::before { content: "✦"; position: absolute; left: 0; color: var(--accent); font-size: 0.7em; top: 0.35em; }
+}
+
+/* ---------- Tarot: shuffle, deal and flip ---------- */
+@layer components {
+  .tarot-slot {
+    position: absolute;
+    animation: tarot-deal 0.6s var(--ease-celestial) both;
+  }
+  .tarot-card {
+    position: absolute;
+    inset: 0;
+    perspective: 900px;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .tarot-inner {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.85s var(--ease-celestial);
+  }
+  .tarot-inner.is-flipped { transform: rotateY(180deg); }
+  .tarot-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 6%;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .tarot-face svg { width: 100%; height: 100%; display: block; }
+  .tarot-card:hover .tarot-face { box-shadow: var(--shadow-card), 0 0 22px rgb(225 180 120 / 0.35); }
+
+  .tarot-deck { position: relative; width: 96px; height: 154px; }
+  .tarot-deck > div { position: absolute; inset: 0; }
+  .tarot-deck.riffling > div:nth-child(odd) { animation: tarot-riffle-l 0.45s ease-in-out 3 alternate; }
+  .tarot-deck.riffling > div:nth-child(even) { animation: tarot-riffle-r 0.45s ease-in-out 3 alternate; }
+
+  @keyframes tarot-deal {
+    from { transform: translate(var(--dx, 0), var(--dy, -40px)) rotate(-10deg) scale(0.85); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  @keyframes tarot-riffle-l { to { transform: translateX(-46px) rotate(-9deg); } }
+  @keyframes tarot-riffle-r { to { transform: translateX(46px) rotate(9deg); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot-slot, .tarot-deck.riffling > div { animation: none !important; }
+  .tarot-inner { transition: none; }
 }

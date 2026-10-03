@@ -1,0 +1,265 @@
+/*
+ * Celestial Oracle — design tokens
+ * ---------------------------------------------------------------
+ * Single source of truth for color, type, radii, shadow and texture.
+ * Every value below was derived from the five reference images:
+ *
+ *   img1  vintage newspaper print on dusty-rose cloth (black ink, wood-type
+ *         display serifs, italic headlines, double column rules, boxed heads)
+ *   img2  zodiac medallion poster (jewel-tone discs, cream wheel, gold stars)
+ *   img3  tarot collage (navy + gilt, card frames, renaissance warmth)
+ *   img4  navy star-chart with gold linework and cream constellation figures
+ *   img5  engraved sunburst over stippled teal clouds, double gold frame
+ *
+ * Hex values were sampled with k-means clustering of the images
+ * (see README "Design tokens") and then lifted where needed for contrast.
+ *
+ * Two themes share the same semantic names:
+ *   midnight (default) — images 2–5: gilt linework on deep teal-navy
+ *   almanac            — image 1: black ink on dusty-rose newsprint
+ */
+
+@theme {
+  /* ---------- Raw palette (static) ---------- */
+
+  /* Midnight — img5 #0f1e24/#14242b, img4 #161a2a/#273e53 */
+  --color-night-950: #091218;
+  --color-night-900: #0f1e24;
+  --color-night-850: #14242b;
+  --color-night-800: #182634;
+  --color-night-700: #1f3142;
+  --color-night-600: #273e53;
+  --color-night-500: #375a6a;
+  --color-night-400: #627279;
+
+  /* Gilt — img5 #cca874, img5 highlight #e1b478, img3 pale #d4be88, img4 bronze #977049 */
+  --color-gold-200: #f0dcb0;
+  --color-gold-300: #e6c992;
+  --color-gold-400: #e1b478;
+  --color-gold-500: #cca874;
+  --color-gold-600: #b08a52;
+  --color-gold-700: #977049;
+  --color-gold-800: #6b5034;
+  --color-gold-900: #3f3020;
+
+  /* Parchment — img3 #d8c398, #cdb88e; img2 cream wheel */
+  --color-parchment-50: #f7efdc;
+  --color-parchment-100: #efe3c6;
+  --color-parchment-200: #e2d1aa;
+  --color-parchment-300: #d8c398;
+  --color-parchment-400: #b9a67f;
+  --color-parchment-500: #8f8166;
+  --color-parchment-600: #6b6150;
+
+  /* Almanac rose — img1 cloth #865f4d (lifted for paper), ink #180e0b */
+  --color-rose-100: #f1ddd2;
+  --color-rose-200: #e3c3b2;
+  --color-rose-300: #cfa18d;
+  --color-rose-400: #b5826d;
+  --color-rose-500: #865f4d;
+  --color-rose-700: #5e3e31;
+  --color-rose-900: #2d1b15;
+  --color-ink: #180e0b;
+
+  /* Cloud teal — img5 stipple clouds #2c4d54/#375a6a, img4 #627279 */
+  --color-cloud-300: #9fb5b4;
+  --color-cloud-400: #7f9a9c;
+  --color-cloud-500: #5d7e84;
+  --color-cloud-600: #2c4d54;
+
+  /* Jewel tones — img2 medallions (rust #782b1c, crimson #722629, olive #756438),
+     img3 lapis #1b255b. Lifted variants are for use on midnight. */
+  --color-vermilion-400: #d4724b;
+  --color-vermilion-500: #b9532f;
+  --color-vermilion-700: #782b1c;
+  --color-crimson-400: #c8555d;
+  --color-crimson-500: #a23b42;
+  --color-crimson-700: #722629;
+  --color-olive-400: #a3a25c;
+  --color-olive-500: #7f8143;
+  --color-olive-700: #564927;
+  --color-lapis-400: #6f8fd0;
+  --color-lapis-500: #3e5ea6;
+  --color-lapis-700: #1b255b;
+  --color-teal-400: #5fa6a8;
+  --color-teal-500: #3f8186;
+  --color-teal-700: #264a55;
+  --color-amethyst-400: #a592cf;
+  --color-amethyst-500: #7c68ab;
+  --color-amethyst-700: #4a3b6b;
+
+  /* ---------- Typography ---------- */
+  /* Engraved Roman capitals (tarot card labels, img3) */
+  --font-display: var(--font-cinzel), "Trajan Pro", Georgia, serif;
+  /* Masthead (img1 "HOROSCOPES" wood-type) */
+  --font-masthead: var(--font-cinzel-deco), var(--font-cinzel), Georgia, serif;
+  /* Italic newspaper headline (img1 "LOOK TO THE STARS") */
+  --font-headline: var(--font-playfair), "Didot", Georgia, serif;
+  /* Old-style book/newsprint body */
+  --font-serif: var(--font-garamond), "Garamond", Georgia, serif;
+  /* Astrological glyphs — text presentation, never emoji */
+  --font-glyph: var(--font-symbols), "Apple Symbols", "Segoe UI Symbol", "DejaVu Sans", sans-serif;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  /* Letter-spacing for engraved caps */
+  --tracking-engraved: 0.14em;
+  --tracking-masthead: 0.08em;
+
+  /* ---------- Radii — print is mostly square ---------- */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-card: 12px; /* tarot card corners */
+
+  /* ---------- Shadows ---------- */
+  --shadow-gilt: 0 0 0 1px rgb(204 168 116 / 0.28), 0 14px 34px -18px rgb(0 0 0 / 0.85);
+  --shadow-glow: 0 0 28px rgb(225 180 120 / 0.16);
+  --shadow-inset: inset 0 1px 0 rgb(247 239 220 / 0.04), inset 0 0 48px rgb(0 0 0 / 0.32);
+  --shadow-card: 0 22px 44px -20px rgb(0 0 0 / 0.9), 0 0 0 1px rgb(204 168 116 / 0.35);
+  --shadow-ink: 2px 2px 0 rgb(24 14 11 / 0.85);
+
+  /* ---------- Motion ---------- */
+  --ease-celestial: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --animate-twinkle: twinkle 6s ease-in-out infinite;
+  --animate-spin-slow: spin 240s linear infinite;
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+}
+
+/* ---------- Semantic tokens (switch per theme) ---------- */
+:root,
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg: var(--color-night-950);
+  --bg-elevated: var(--color-night-900);
+  --surface: rgb(20 36 43 / 0.72);           /* panels over starfield */
+  --surface-strong: var(--color-night-850);
+  --surface-sunken: rgb(9 18 24 / 0.6);
+  --rule: rgb(204 168 116 / 0.32);           /* hairline gilt rule */
+  --rule-strong: var(--color-gold-500);
+  --text: var(--color-parchment-100);
+  --text-muted: var(--color-parchment-400);
+  --text-faint: var(--color-parchment-500);
+  --accent: var(--color-gold-500);
+  --accent-bright: var(--color-gold-400);
+  --accent-ink: var(--color-night-950);      /* text on a gold fill */
+  --focus: var(--color-gold-300);
+  --danger: var(--color-crimson-400);
+  --success: var(--color-teal-400);
+
+  /* Elements — the four triplicities */
+  --element-fire: var(--color-vermilion-400);
+  --element-earth: var(--color-olive-400);
+  --element-air: var(--color-amethyst-400);
+  --element-water: var(--color-teal-400);
+  --element-fire-fill: rgb(120 43 28 / 0.55);
+  --element-earth-fill: rgb(86 73 39 / 0.6);
+  --element-air-fill: rgb(74 59 107 / 0.55);
+  --element-water-fill: rgb(38 74 85 / 0.6);
+
+  /* Aspects — warm = tension, cool = flow, gold = fusion */
+  --aspect-conjunction: var(--color-gold-400);
+  --aspect-opposition: var(--color-crimson-400);
+  --aspect-square: var(--color-vermilion-400);
+  --aspect-trine: var(--color-lapis-400);
+  --aspect-sextile: var(--color-teal-400);
+  --aspect-quincunx: var(--color-amethyst-400);
+  --aspect-semisextile: #8fb48a;
+  --aspect-semisquare: #d39a63;
+  --aspect-sesquiquadrate: #c47f6a;
+
+  /* Chart wheel */
+  --wheel-bg: rgb(9 18 24 / 0.85);
+  --wheel-zodiac-band: rgb(226 209 170 / 0.08);
+  --wheel-line: rgb(204 168 116 / 0.55);
+  --wheel-line-faint: rgb(204 168 116 / 0.2);
+  --wheel-glyph: var(--color-parchment-50);
+  --wheel-angle: var(--color-gold-300);
+  --wheel-center: rgb(15 30 36 / 0.92);
+
+  /* Textures */
+  --texture-stars: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cg fill='%23cca874'%3E%3Ccircle cx='23' cy='41' r='0.8' opacity='.7'/%3E%3Ccircle cx='71' cy='13' r='0.6' opacity='.5'/%3E%3Ccircle cx='131' cy='77' r='1' opacity='.8'/%3E%3Ccircle cx='187' cy='29' r='0.6' opacity='.45'/%3E%3Ccircle cx='251' cy='61' r='0.9' opacity='.6'/%3E%3Ccircle cx='301' cy='17' r='0.5' opacity='.5'/%3E%3Ccircle cx='47' cy='139' r='0.6' opacity='.4'/%3E%3Ccircle cx='97' cy='181' r='0.9' opacity='.65'/%3E%3Ccircle cx='163' cy='151' r='0.5' opacity='.5'/%3E%3Ccircle cx='219' cy='197' r='0.8' opacity='.55'/%3E%3Ccircle cx='283' cy='131' r='0.6' opacity='.5'/%3E%3Ccircle cx='15' cy='241' r='0.9' opacity='.6'/%3E%3Ccircle cx='79' cy='277' r='0.5' opacity='.45'/%3E%3Ccircle cx='141' cy='239' r='0.7' opacity='.5'/%3E%3Ccircle cx='203' cy='289' r='0.6' opacity='.55'/%3E%3Ccircle cx='269' cy='251' r='0.9' opacity='.6'/%3E%3Ccircle cx='311' cy='299' r='0.5' opacity='.4'/%3E%3Cpath d='M112 112l1.2 4.3 4.3 1.2-4.3 1.2-1.2 4.3-1.2-4.3-4.3-1.2 4.3-1.2z' opacity='.75'/%3E%3Cpath d='M262 212l.9 3.1 3.1.9-3.1.9-.9 3.1-.9-3.1-3.1-.9 3.1-.9z' opacity='.6'/%3E%3Cpath d='M40 300l.8 2.6 2.6.8-2.6.8-.8 2.6-.8-2.6-2.6-.8 2.6-.8z' opacity='.55'/%3E%3Cpath d='M230 100l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7z' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .8 0 0 0 0 .66 0 0 0 0 .45 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --texture-stipple: radial-gradient(rgb(204 168 116 / 0.16) 0.6px, transparent 0.8px);
+  --grain-opacity: 0.07;
+}
+
+[data-theme="almanac"] {
+  color-scheme: light;
+  --bg: var(--color-rose-300);
+  --bg-elevated: var(--color-rose-200);
+  --surface: rgb(227 195 178 / 0.78);
+  --surface-strong: var(--color-rose-200);
+  --surface-sunken: rgb(181 130 109 / 0.25);
+  --rule: rgb(24 14 11 / 0.45);
+  --rule-strong: var(--color-ink);
+  --text: var(--color-ink);
+  --text-muted: var(--color-rose-700);
+  --text-faint: var(--color-rose-500);
+  --accent: var(--color-ink);
+  --accent-bright: var(--color-rose-900);
+  --accent-ink: var(--color-rose-100);
+  --focus: var(--color-rose-900);
+  --danger: var(--color-crimson-700);
+  --success: var(--color-teal-700);
+
+  --element-fire: var(--color-vermilion-700);
+  --element-earth: var(--color-olive-700);
+  --element-air: var(--color-amethyst-700);
+  --element-water: var(--color-teal-700);
+  --element-fire-fill: rgb(120 43 28 / 0.14);
+  --element-earth-fill: rgb(86 73 39 / 0.14);
+  --element-air-fill: rgb(74 59 107 / 0.14);
+  --element-water-fill: rgb(38 74 85 / 0.14);
+
+  --aspect-conjunction: var(--color-rose-900);
+  --aspect-opposition: var(--color-crimson-700);
+  --aspect-square: var(--color-vermilion-700);
+  --aspect-trine: var(--color-lapis-700);
+  --aspect-sextile: var(--color-teal-700);
+  --aspect-quincunx: var(--color-amethyst-700);
+  --aspect-semisextile: #3f5e3a;
+  --aspect-semisquare: #8a5328;
+  --aspect-sesquiquadrate: #7a3f2f;
+
+  --wheel-bg: rgb(227 195 178 / 0.55);
+  --wheel-zodiac-band: rgb(24 14 11 / 0.05);
+  --wheel-line: rgb(24 14 11 / 0.75);
+  --wheel-line-faint: rgb(24 14 11 / 0.25);
+  --wheel-glyph: var(--color-ink);
+  --wheel-angle: var(--color-ink);
+  --wheel-center: rgb(241 221 210 / 0.6);
+
+  --texture-stars: none;
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .05 0 0 0 0 .04 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --texture-stipple: radial-gradient(rgb(24 14 11 / 0.12) 0.6px, transparent 0.8px);
+  --grain-opacity: 0.16;
+}
+
+/* Expose semantic tokens as Tailwind utilities (bg-surface, text-muted, border-rule …) */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-ink: var(--accent-ink);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-fire: var(--element-fire);
+  --color-earth: var(--element-earth);
+  --color-air: var(--element-air);
+  --color-water: var(--element-water);
+}

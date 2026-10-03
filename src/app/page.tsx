@@ -1,69 +1,102 @@
-import Image from "next/image";
+import Link from "next/link";
+import fs from "node:fs";
+import path from "node:path";
+import { listPeople } from "@/lib/db/people";
+import { ephemerisInfo } from "@/lib/astro/ephemeris";
+import { tzdbVersion } from "@/lib/astro/tz";
+import { aiConfigured, MODEL } from "@/lib/ai/client";
+import { Frame, Panel, BoxedHead } from "@/components/ui/Frame";
+import { Sunburst, StarRule } from "@/components/ui/Ornaments";
 
 export default function Home() {
+  const people = listPeople();
+  const eph = ephemerisInfo();
+  const files = ["sepl_18.se1", "semo_18.se1", "seas_18.se1"].map((f) => ({ f, ok: fs.existsSync(path.join(eph.path, f)) }));
+  const ai = aiConfigured();
+  const forPerson = (section: string) => (people[0] ? `/${section}/${people[0].id}` : "/people/new");
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="space-y-6">
+        <Frame>
+          <div className="flex flex-col items-center gap-3 py-4 text-center">
+            <Sunburst size={72} className="text-accent" />
+            <BoxedHead title="Today's Edition" tagline="The darkest nights produce the brightest stars." />
+            <p className="max-w-2xl text-[1.05rem] leading-relaxed text-muted">
+              A private observatory for charts, cycles and cards. Every position is calculated with the Swiss Ephemeris and
+              checked against astro.com; the interpreter only ever reads what the engine computed.
+            </p>
+            <div className="mt-2 flex flex-wrap justify-center gap-3">
+              <Link href="/people/new" className="btn btn-gilt">Cast a new chart</Link>
+              {people[0] && <Link href={`/chart/${people[0].id}`} className="btn">Open {people[0].name}</Link>}
+            </div>
+          </div>
+        </Frame>
+
+        <Panel title="The Register" actions={<Link href="/people" className="text-xs text-muted hover:text-accent-bright">All people →</Link>}>
+          {people.length === 0 ? (
+            <p className="py-6 text-center italic text-muted">Nobody here yet — cast your own chart first.</p>
+          ) : (
+            <ul className="grid gap-x-6 sm:grid-cols-2">
+              {people.slice(0, 12).map((p) => (
+                <li key={p.id} className="border-b border-rule py-2">
+                  <Link href={`/chart/${p.id}`} className="flex items-baseline justify-between gap-3 hover:text-accent-bright">
+                    <span className="engraved text-sm">{p.name}</span>
+                    <span className="num text-xs text-faint">{p.birthDate}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <StarRule />
+        <div className="grid gap-4 text-sm sm:grid-cols-3">
+          {[
+            { t: "Sky Now & Transits", d: "Live planetary positions, Moon phase and void-of-course, transit timeline with exact dates.", links: [["Sky Now", "/sky"], ["Transits", forPerson("transits")]] },
+            { t: "Your Year", d: "Profections, Lord of the Year, solar return, progressions and personal-year numerology.", links: [["Your Year", forPerson("year")]] },
+            { t: "Numerology · Tarot · Chat", d: "Full numerology with workings, a 78-card deck with spreads, and an always-on interpreter.", links: [["Numerology", "/numerology"], ["Tarot", "/tarot"]] },
+          ].map(({ t, d, links }) => (
+            <div key={t} className="panel p-4">
+              <h3 className="engraved text-[0.75rem] text-accent-bright">{t}</h3>
+              <p className="mt-1 text-muted">{d}</p>
+              <p className="mt-2 flex gap-4 text-xs">
+                {links.map(([label, href]) => <Link key={label} href={href} className="text-accent hover:text-accent-bright">{label} →</Link>)}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <aside className="space-y-6">
+        <Panel title="Observatory Status">
+          <dl className="space-y-2 text-sm">
+            <div>
+              <dt className="engraved text-[0.6rem] text-faint">Swiss Ephemeris {eph.version}</dt>
+              <dd>{files.map(({ f, ok }) => <span key={f} className={`mr-2 ${ok ? "text-success" : "text-danger"}`}>{ok ? "✓" : "✗"} {f}</span>)}</dd>
+            </div>
+            <div>
+              <dt className="engraved text-[0.6rem] text-faint">Time zones</dt>
+              <dd>IANA tzdb {tzdbVersion()} with pre-1970 backzone history</dd>
+            </div>
+            <div>
+              <dt className="engraved text-[0.6rem] text-faint">Interpreter</dt>
+              <dd className={ai ? "text-success" : "text-danger"}>{ai ? `✓ ${MODEL}` : "✗ ANTHROPIC_API_KEY not set (see README)"}</dd>
+            </div>
+            <div>
+              <dt className="engraved text-[0.6rem] text-faint">Charts saved</dt>
+              <dd className="num">{people.length}</dd>
+            </div>
+          </dl>
+        </Panel>
+        <Panel title="Accuracy">
+          <p className="text-sm text-muted">
+            Validated against five Astro-Databank reference charts (Jobs, Obama, Diana, Einstein, Hendrix) including
+            Local Mean Time and US War Time births: every planet, node, Lilith, Chiron, angle and house cusp matches astro.com
+            to well under one arcsecond. Run <code className="text-accent-bright">npm test</code> to re-verify.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        </Panel>
+      </aside>
     </div>
   );
 }
